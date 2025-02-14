@@ -42,6 +42,6 @@ function ImageSwitcher ({ images, game }: { images: any[]; game: Game })  {
             </p>
         </div>
     );
-};
+}
 
 export default ImageSwitcher;

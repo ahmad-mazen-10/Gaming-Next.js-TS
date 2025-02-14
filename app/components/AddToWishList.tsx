@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import { useLocalStorageState } from '../hooks/useLocalStorageState';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, XCircle } from 'lucide-react';
 import { useWishlist } from '../context/wishlistContext';

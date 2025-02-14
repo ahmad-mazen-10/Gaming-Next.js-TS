@@ -7,8 +7,6 @@ import {
     PaginationEllipsis,
     PaginationItem,
     PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
 } from "@/components/ui/pagination";
 
 function PaginationCustom({ page, count, setPage }: {

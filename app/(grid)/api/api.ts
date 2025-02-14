@@ -1,9 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { APIURL, KEY } from "@/app/constants";
 
-const fetchFn = (url: string, cache?: number) =>
-    fetch(url, { next: { revalidate: cache || 3600 } })
-        .then((res) => res.json());
+const fetchFn = async (url: string, cache: number = 3600) => {
+  try {
+    const res = await fetch(url, { next: { revalidate: cache } });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    throw new Error("Failed to fetch data.");
+  }
+};
 
 export const searchGames = async function (
   query?: string,
@@ -23,7 +34,6 @@ export const searchGames = async function (
   return { data, count };
 };
 
-
 export const getGame = async function (id: string) {
   try {
     const data = await fetchFn(`${APIURL}games/${id}?key=${KEY}`); //details
@@ -39,14 +49,12 @@ export const getGame = async function (id: string) {
   }
 };
 
-
 export const getGameFromgenres = async function (genre = "51") {
   const data = await fetchFn(
     `${APIURL}games?genres=${genre}&page_size=15&key=${KEY}`
   );
   return data;
 };
-
 
 export const gamebyplatforms = async function (
   id: string,
@@ -60,7 +68,6 @@ export const gamebyplatforms = async function (
   );
   return data;
 };
-
 
 export const getGamesByIds = async function (ids: string[]) {
   const data = await Promise.all(ids.map((id) => getGame(id)));

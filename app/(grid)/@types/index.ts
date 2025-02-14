@@ -19,7 +19,7 @@ export interface Game {
   playtime: number;
   suggestions_count: number;
   updated: string;
-  user_game: any | null;
+  user_game: string | null;
   reviews_count: number;
   saturated_color: string;
   dominant_color: string;

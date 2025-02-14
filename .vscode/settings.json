@@ -4,6 +4,7 @@
     "dbname",
     "Fromgenres",
     "gamebyplatforms",
+    "IMAGEKIT",
     "navlink"
   ],
   "AllAutocomplete.showCurrentDocument": false

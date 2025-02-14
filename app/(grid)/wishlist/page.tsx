@@ -9,8 +9,8 @@ import GameSkeleton from '@/app/components/GameSkeleton';
 import Empty from "@/app/components/defaults/Empty";
 
 function page() {
-    const { wishlist } = useWishlist();
-    const { games = [], isLoading } = useGetGamesWithIds(wishlist);
+    const { wishlistLocal } = useWishlist();
+    const { games = [], isLoading } = useGetGamesWithIds(wishlistLocal);
 
     return (
         <div className="flex flex-col gap-4 mt-10">

@@ -28,7 +28,7 @@ async function page({ params }: { params: { id: string } }) {
                                 return {
                                     card: (
                                         <div className=" rounded-xl overflow-hidden h-[36rem] w-full relative">
-                                            <Image src={screenshot.image || screenshot} alt={data.name} fill className=" object-cover" />
+                                            <Image src={screenshot.image || screenshot} alt={data.name} fill className="object-cover" />
                                         </div>
                                     ),
                                     src: screenshot.image || screenshot,

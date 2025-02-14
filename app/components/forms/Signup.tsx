@@ -1,5 +1,5 @@
 'use client'
-import React, { useTransition } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link';
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,21 +10,47 @@ import FormInput from '../FormInput'
 import Logo from '../defaults/Logo';
 import MotionItem from '../defaults/MotionItem'
 import MaxWidthWrapper from '../defaults/MaxWidthWrapper'
-import FileUpload from '../FileUpload';
 import { signup } from '@/app/functions/auth';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import ImageKit from "imagekit";
+import Image from 'next/image';
+import connect from '@/app/functions/connect';
+
+
+const imagekit = new ImageKit({
+  publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
+  privateKey: process.env.PRIVATE_KEY!,
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT!,
+});
+
+const signupSchema = z.object({
+  name: z.string().min(5),
+  email: z.string().email({ message: "Must be enter a valid email" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  avatar: z.object({
+    public_id: z.string().min(1, "Public ID is required"), 
+    secure_url: z.string().min(1, "Secure URL is required"),
+  }).optional(),  
+}).refine((data) => data.password === data.confirmPassword,
+  { message: "password doesn't match", path: ['confirmPassword'] });
+
 
 
 function Signup() {
+  const router = useRouter();
 
-  const signupSchema = z.object({
-    name: z.string().min(5),
-    email: z.string().email({ message: "Must be enter a valid email" }),
-    password: z.string().min(6, { message: "Password must be at  least 6 characters" }),
-    confirmPassword: z.string().min(6, { message: "Password must be at  least 6 characters" }),
-    avatar: z.any(),
-  }).refine((data) => data.password === data.confirmPassword, { message: "password doesn't match", path: ['confirmPassword'] })
+
+  const [isPending, setIsPending] = useState(false);
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    avatar: "",
+  });
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -33,52 +59,68 @@ function Signup() {
       email: '',
       password: '',
       confirmPassword: '',
-      avatar: '',
+      avatar: {
+        public_id: '',
+        secure_url: '',
+      },
     }
   });
 
-  const [isPending, startTransition] = useTransition();
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file: any = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("fileName", file.name);
+      formData.append("useUniqueFileName", "true");
+
+      imagekit.upload({
+        file: file,
+        fileName: file.name,
+      }).then((response) => {
+        if (response && response.url && response.fileId) {
+          setUploadedImageUrl(response.url);
+          form.setValue('avatar', {
+            public_id: response.fileId,
+            secure_url: response.url,      
+          });
+        }
+      }).catch((error) => {
+        console.error("Image upload failed :--> ", error);
+      })
+    }
+  };
+
+
 
   const onSubmit = async (data: z.infer<typeof signupSchema>) => {
-    startTransition(async () => {
-      if (data.avatar) {
-        const formData = new FormData();
-        formData.append('file', data.avatar[0]);
-        formData.append('upload-presets', 'Restrict unsigned image URLs');
-        try {
-          const res = await fetch(process.env.NEXT_PUBLIC_URL_ENDPOINT!, {
-            method: 'POST',
-            body: formData,
-            mode: 'no-cors'
-          });
-          console.log(res);
+    await connect();
+    try {
+      const response = await signup({
+        ...data,
+        avatar: data.avatar ? {
+          public_id: data.avatar.public_id,
+          secure_url: data.avatar.secure_url, 
+        } : null,
+      });
 
-          if (!res.ok) {
-            const errorResponse = await res.json(); // Show Cloudinary error details
-            console.error("Cloudinary Error:", errorResponse);
-            throw new Error("Failed to upload photo");
-          }
-        
-          const imageKit = await res.json();
-          data.avatar = {
-            secure_url: imageKit.secure_url,
-            public_id: imageKit.public_id,
-          };
+      console.log(response)
 
-        } catch (error) {
-          console.error("Photo upload failed:", error);
-        }
-
-        const response = await signup(data);
-        console.log(response);
-        if (response?.message && !response.error) {
-          toast.success(response.message);
-          redirect('/login')
-        }
-        else toast.error(response.error);
+      if (response?.message && !response.error) {
+        toast.success(response.message);
+        router.push('/login');
+      } else {
+        toast.error(response.error);
       }
-    });
+
+    } catch (error) {
+      console.error("Error submitting form:--> ", error);
+      toast.error("An error occurred during signup");
+    } finally {
+      setIsPending(false);
+    }
   }
+
 
   return (
     <MotionItem animate={{ opacity: 1, y: 0, transition: { duration: 1 } }} initial={{ opacity: 0, y: 100 }}>
@@ -89,12 +131,24 @@ function Signup() {
         <Logo />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-6">
-            <FileUpload name='avatar' />
+
+            <div>
+              <input
+                type="file"
+                id="avatar"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="mt-2"
+              />
+              <label htmlFor="avatar" className="text-gray-50">Avatar</label>
+              {uploadedImageUrl && <Image src={uploadedImageUrl} alt="Uploaded Avatar" className="mt-2" width={100} height={100} />}
+            </div>
+
             <FormInput name='name' label='Name' type='text' />
             <FormInput name='email' label='Email' type='email' />
             <FormInput name='password' label='Password' type='password' />
             <FormInput name='confirmPassword' label='Confirm Password' type='password' />
-            <Button disabled={isPending}  type="submit">Submit</Button>
+            <Button disabled={isPending} type="submit">Submit</Button>
           </form>
         </Form>
 

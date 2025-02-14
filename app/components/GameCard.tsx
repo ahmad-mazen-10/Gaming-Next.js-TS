@@ -22,7 +22,7 @@ function GameCard({ game, wishlist, screenBig = false }: { game: Game, wishlist?
                                 {game.name}
                             </Link>
                             <div key={game.id} className=" mt-2 flex items-center gap-1">
-                                {game.parent_platforms.map((platform, i) => (
+                                {game.parent_platforms?.map((platform, i) => (
                                     <p key={`platform-${platform.platform.id}-${i}`}>
                                         {platform.platform.slug === "pc" ? (
                                             <FaSteam />

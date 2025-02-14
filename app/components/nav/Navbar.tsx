@@ -16,7 +16,7 @@ function Navbar() {
         {isLoading ? (
           <SkeletonCustom circle />
         ) : (
-          user
+          user?.data
         ) ? (
           <User user={user.data} />
         ) : (

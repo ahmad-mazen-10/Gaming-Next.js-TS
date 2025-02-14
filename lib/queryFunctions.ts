@@ -1,6 +1,6 @@
 "use client";
 
-import { getGame, getGamesByIds, searchGames } from "@/app/(grid)/api/api";
+import { getGamesByIds, searchGames } from "@/app/(grid)/api/api";
 import { getUser } from "@/app/functions/auth";
 import { useQuery } from "@tanstack/react-query";
 

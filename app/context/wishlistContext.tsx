@@ -9,7 +9,7 @@ import { AddToWishList, removeFromWishlist } from "../functions/actions";
 
 interface WishListProps {
   handleAddToWishlist: (gameId: string) => void;
-  wishlist: string[];
+  wishlistLocal: string[];
 }
 
 const wishlistContext = createContext<WishListProps | null>(null);
@@ -45,7 +45,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   if (!mount) return null
   if (isLoading) return <Spinner />
-  return <wishlistContext.Provider value={{ handleAddToWishlist, wishlist }} >{children}</wishlistContext.Provider>
+  return <wishlistContext.Provider value={{ handleAddToWishlist, wishlistLocal }} >{children}</wishlistContext.Provider>
 }
 
 export function useWishlist() {

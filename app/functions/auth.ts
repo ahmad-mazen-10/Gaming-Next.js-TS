@@ -9,11 +9,12 @@ const JWT_EXPIRES = 30 * 60;
 
 export async function signup(data: any) {
   try {
-    connect();
-    const hashedPassword = bcrypt.hash(data.password, 10);
+    await connect();
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = await User.create({ ...data, password: hashedPassword });
     const userObj = JSON.parse(JSON.stringify(user));
-
+    console.log(userObj);
+    
     return { message: "user create successful !!" };
   } catch (error: any) {
     console.error("error :--> ", error);

@@ -1,18 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState } from "react";
-import ImageKit from "imagekit";
+import { IKImage, IKVideo, ImageKitProvider, IKUpload, ImageKitContext } from "imagekitio-next";
 import { FileUploadUI } from "@/components/ui/file-upload";
 import { useFormContext } from "react-hook-form";
 
 function FileUpload({ name }: { name: string }) {
 
+    const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY || "";
+    const privateKey = process.env.PRIVATE_KEY || "";
+    const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT || "";
 
-    const imagekit = new ImageKit({
-        publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY || "",
-        privateKey: process.env.PRIVATE_KEY || "",
-        urlEndpoint: process.env.NEXT_PUBLIC_URL_ENDPOINT || "",
-    });
 
 
     const [files, setFiles] = useState<File[]>([]);
