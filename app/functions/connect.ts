@@ -11,7 +11,6 @@ const cached =
   globalAny.mongoose || (globalAny.mongoose = { conn: null, promise: null });
 
 async function connect() {
-  // console.log("MONGO_URI: ", process.env.MONGO_URI);
 
   if (cached.conn) return cached.conn;
 
@@ -24,10 +23,7 @@ async function connect() {
   cached.promise =
     cached.promise ||
     mongoose.default
-      .connect(process.env.MONGO_URI!, {
-        dbName: "gaming",
-        bufferCommands: true,
-      })
+      .connect(process.env.MONGO_URI!)
       .then(() => {
         console.log("Database connected successfully");
         return mongoose.connection;

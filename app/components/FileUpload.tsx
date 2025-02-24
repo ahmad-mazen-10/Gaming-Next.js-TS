@@ -2,6 +2,7 @@
 "use client";
 import React, { useState } from "react";
 import { IKImage, IKVideo, ImageKitProvider, IKUpload, ImageKitContext } from "imagekitio-next";
+import ImageKit from "imagekit";
 import { FileUploadUI } from "@/components/ui/file-upload";
 import { useFormContext } from "react-hook-form";
 
@@ -12,6 +13,11 @@ function FileUpload({ name }: { name: string }) {
     const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT || "";
 
 
+    const imagekit = new ImageKit({
+        publicKey,
+        privateKey,
+        urlEndpoint,
+    });
 
     const [files, setFiles] = useState<File[]>([]);
     const form = useFormContext();
@@ -19,7 +25,7 @@ function FileUpload({ name }: { name: string }) {
     const handleFileUpload = async (files: File[]) => {
         setFiles(files);
         form.setValue(name, files);
-        console.log(files, form.getValues(name));
+        // console.log(files, form.getValues(name));
 
         for (const file of files) {
             try {

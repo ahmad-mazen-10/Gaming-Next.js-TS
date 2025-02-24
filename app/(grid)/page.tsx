@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { getGamesByIds, searchGames } from "./api/api";
 import Hero from "../components/Hero";
@@ -53,9 +51,9 @@ export default async function Home() {
   }
 
   function logType(data: any, label: string) {
-    console.log(`🔍 ${label} - Type:`, typeof data);
-    console.log(`🔍 ${label} - Prototype:`, Object.getPrototypeOf(data));
-    console.log(`🔍 ${label} - JSON:`, JSON.stringify(data, null, 2));
+    // console.log(`🔍 ${label} - Type:`, typeof data);
+    // console.log(`🔍 ${label} - Prototype:`, Object.getPrototypeOf(data));
+    // console.log(`🔍 ${label} - JSON:`, JSON.stringify(data, null, 2));
   }
 
   console.log("========== Debugging Data ==========");
@@ -83,7 +81,7 @@ export default async function Home() {
         />
       )}
 
-      {customGames && (
+      {/* {customGames && (
         <GamesSlider
           screenBig
           big
@@ -91,7 +89,7 @@ export default async function Home() {
           title="PLAYSTATION EXCLUSIVES"
           games={customGames.map((game) => cleanGameData(game?.data)).filter(Boolean)}
         />
-      )}
+      )} */}
 
       {pc?.data?.results && (
         <GamesSlider

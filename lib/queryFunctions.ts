@@ -4,13 +4,15 @@ import { getGamesByIds, searchGames } from "@/app/(grid)/api/api";
 import { getUser } from "@/app/functions/auth";
 import { useQuery } from "@tanstack/react-query";
 
-export function useGetUser() {
-  const { data: user , isLoading } = useQuery({
+export const useGetUser = () => {
+  const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: () => getUser(),
   });
-    return { user, isLoading };
-}
+
+  return { user, isLoading };
+};
+
 
 export function useGetGamesWithIds(ids:string[]) {
   const { data: games, isLoading } = useQuery({

@@ -9,9 +9,9 @@ async function page({ params }: { params: { id: string } }) {
 
     const { id } = params;
     const game = await getGame(id);
-    console.log(game);
+    // console.log(game);
     const { screenshots, data, similar }: { screenshots: { results: any[] }; data: Game; similar: { results: Game[] } } = game;
-    console.log(data.ratings);
+    // console.log(data.ratings);
 
     return (
         <div className=" mt-10">
